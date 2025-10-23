@@ -1,0 +1,13 @@
+name: CyAnnouncerBungee
+main: cydev.id.cyannouncer.bungee.BungeeAnnouncer
+version: 1.0.0
+author: cydev-id
+description: An advanced, server-specific announcer plugin for BungeeCord.
+
+commands:
+  bcbroadcast:
+    description: Broadcasts a message to specific servers or all servers.
+    permission: announcer.broadcast
+  bcreload:
+    description: Reloads the CyAnnouncer configuration.
+    permission: announcer.reload

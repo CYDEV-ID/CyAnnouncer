@@ -1,0 +1,78 @@
+# ===================================================================
+#                CyAnnouncer-Velocity Configuration
+# ===================================================================
+#
+# Plugin Author: cydev-id
+# Plugin Version: 1.0.0
+#
+# HOW TO USE THIS FILE:
+#
+# - Use the '&' symbol for color codes (e.g., &a for green, &l for bold).
+# - YAML is sensitive to spacing. Do not use tabs; use spaces.
+#   Indentation is crucial for the structure.
+#
+# ===================================================================
+
+# Default interval in SECONDS between each announcement for a server.
+# For example, if a player is on the Survival server, they will see a
+# new message from their announcement cycle every 60 seconds.
+interval: 60
+
+# The prefix that appears before every line of an announcement.
+# Set to "" (empty quotes) to disable the prefix entirely.
+prefix: "&e[&l!&r&e] &r"
+
+
+# ===================================================================
+#                     ANNOUNCEMENTS SECTION
+# ===================================================================
+#
+# HOW IT WORKS:
+# This plugin uses an intelligent, independent cycle system for each server.
+#
+# 1.  A server with its own specific messages (e.g., 'survival') will create a
+#     unique cycle: (Global Message -> Specific Survival Msg 1 -> Specific Survival Msg 2 -> Global Message -> ...)
+#
+# 2.  A server WITHOUT specific messages (e.g., 'lobby') will only cycle
+#     through the global messages: (Global Message 1 -> Global Message 2 -> Global Message 1 -> ...)
+#
+# Each server's cycle runs independently and does not affect the others.
+#
+announcements:
+  # --- GLOBAL ANNOUNCEMENTS ---
+  # These messages will be part of the cycle for EVERY server.
+  # To make a message global, add "all" to its 'servers' list.
+
+  - servers:
+      - "all"
+    lines:
+      - "&eDon't forget to vote for our server every day!"
+      - "&fUse the command &b/vote&f to get rewards."
+
+  - servers:
+      - "all"
+    lines:
+      - "&dCheck out our webstore for exclusive ranks and items!"
+
+  # --- SERVER-SPECIFIC ANNOUNCEMENTS ---
+  # These messages will ONLY be shown to players on the specified servers.
+  # They will be inserted into the cycle after a global message.
+
+  - servers:
+      - "oneblock"
+      - "skyblock" # You can target multiple servers with the same message block.
+    lines:
+      - "&aWelcome to the Sky!"
+      - "&fType &b/is&f to start your adventure."
+
+  - servers:
+      - "oneblock"
+      - "skyblock"
+    lines:
+      - "&bLooking for a team? Use &a/team&b to cooperate with others!"
+
+  - servers:
+      - "survival"
+    lines:
+      - "&cWatch out! PvP is enabled in the wilderness."
+      - "&fClaim your land using a Golden Shovel to stay safe."

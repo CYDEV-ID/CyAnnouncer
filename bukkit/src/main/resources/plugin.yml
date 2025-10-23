@@ -1,0 +1,13 @@
+name: CyAnnouncer
+main: cydev.id.cyannouncer.bukkit.CyAnnouncer
+version: 1.0.0
+api-version: '1.21'
+author: cydev-id
+description: An advanced, world-specific announcer plugin for modern Minecraft servers.
+website: https://github.com/cydev-id
+
+commands:
+  announcer:
+    description: Main command for CyAnnouncer.
+    usage: "/<command> <reload|broadcast>"
+    aliases: [an, cyannouncer]

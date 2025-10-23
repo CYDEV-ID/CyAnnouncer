@@ -1,0 +1,47 @@
+# ===================================================================
+#                  CyAnnouncer Configuration
+# ===================================================================
+#
+# Plugin Author: cydev-id
+# Plugin Version: 1.0.0
+#
+# HOW IT WORKS:
+# This plugin will display announcements with an independent cycle for each world.
+#
+# 1. A world with specific messages (e.g., 'world_the_end') will have a cycle of:
+#    (Global Message -> Specific End Msg 1 -> Global Message -> ...)
+#
+# 2. A world without specific messages will ONLY cycle through global messages.
+#
+# ===================================================================
+
+# Interval in SECONDS between each announcement for a world.
+interval: 60
+
+# Prefix appearing before each announcement line.
+# Set to "" to disable.
+prefix: "&e[&l!&r&e] &r"
+
+# --- ANNOUNCEMENTS SECTION ---
+announcements:
+  # --- GLOBAL ANNOUNCEMENTS ---
+  # These messages will be part of the cycle in ALL worlds.
+  # Use "all" in the 'worlds' list.
+  - worlds:
+      - "all"
+    lines:
+      - "&eDon't forget to vote for the server every day!"
+      - "&fUse the command &b/vote&f to get rewards."
+
+  # --- WORLD-SPECIFIC ANNOUNCEMENTS ---
+  # These messages will ONLY appear in the specified worlds.
+  - worlds:
+      - "world_the_end"
+    lines:
+      - "&5Be careful! The Ender Dragon is powerful in this world."
+
+  - worlds:
+      - "world_nether"
+    lines:
+      - "&cIt's hot in here! Make sure to bring fire resistance potions."
+      - "&fDon't hit a Piglin without preparation!"
