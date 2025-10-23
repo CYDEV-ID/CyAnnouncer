@@ -22,7 +22,7 @@ public class AnnouncerReloadCommand implements SimpleCommand {
             plugin.startAnnouncements();
 
             invocation.source().sendMessage(
-                    Component.text("CyAnnouncer-Velocity configuration has been reloaded.", NamedTextColor.GREEN)
+                    Component.text("CyAnnouncerVelocity configuration has been reloaded.", NamedTextColor.GREEN)
             );
         } else {
             sendUsage(invocation);

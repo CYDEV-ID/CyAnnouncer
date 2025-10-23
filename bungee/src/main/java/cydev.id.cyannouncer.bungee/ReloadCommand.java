@@ -17,6 +17,6 @@ public class ReloadCommand extends Command {
     public void execute(CommandSender sender, String[] args) {
         plugin.loadConfig();
         plugin.startAnnouncements();
-        sender.sendMessage(new TextComponent(ChatColor.GREEN + "CyAnnouncer-Bungee configuration has been reloaded."));
+        sender.sendMessage(new TextComponent(ChatColor.GREEN + "CyAnnouncerBungee configuration has been reloaded."));
     }
 }

@@ -1,5 +1,6 @@
 package cydev.id.cyannouncer.bukkit;
 
+import me.clip.placeholderapi.PlaceholderAPI; // Ditambahkan
 import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -24,6 +25,9 @@ public class CyAnnouncer extends JavaPlugin {
     private String prefix;
     private int interval;
 
+    // Variabel untuk menyimpan status PAPI
+    private boolean placeholderApiEnabled = false;
+
     @Override
     public void onEnable() {
         int pluginId = 27594;
@@ -31,9 +35,18 @@ public class CyAnnouncer extends JavaPlugin {
 
         loadConfig();
 
+        // Pastikan class AnnouncerCommand Anda ada
         AnnouncerCommand announcerExecutor = new AnnouncerCommand(this);
         getCommand("announcer").setExecutor(announcerExecutor);
         getCommand("announcer").setTabCompleter(announcerExecutor);
+
+        // Cek apakah PlaceholderAPI ada di server
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            this.placeholderApiEnabled = true;
+            getLogger().info("Successfully hooked into PlaceholderAPI.");
+        } else {
+            getLogger().info("PlaceholderAPI not found. Placeholders will not be parsed.");
+        }
 
         getLogger().info("CyAnnouncer has been enabled.");
         startAnnouncements();
@@ -59,6 +72,7 @@ public class CyAnnouncer extends JavaPlugin {
 
                 if (worlds.isEmpty() || lines.isEmpty()) continue;
 
+                // Pastikan class Announcement Anda ada
                 Announcement announcement = new Announcement(worlds, lines);
                 if (worlds.contains("all")) {
                     allMessages.add(announcement);
@@ -111,9 +125,13 @@ public class CyAnnouncer extends JavaPlugin {
 
                 if (announcementToSend != null) {
                     List<Player> targetPlayers = playersByWorld.get(worldName);
-                    for (String line : announcementToSend.lines()) {
-                        String finalLine = ChatColor.translateAlternateColorCodes('&', this.prefix + line);
-                        for (Player player : targetPlayers) {
+                    for (Player player : targetPlayers) {
+                        for (String line : announcementToSend.lines()) {
+                            String rawLine = this.prefix + line;
+                            String parsedLine = this.placeholderApiEnabled
+                                    ? PlaceholderAPI.setPlaceholders(player, rawLine)
+                                    : rawLine;
+                            String finalLine = ChatColor.translateAlternateColorCodes('&', parsedLine);
                             player.sendMessage(finalLine);
                         }
                     }

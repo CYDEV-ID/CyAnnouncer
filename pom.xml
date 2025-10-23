@@ -64,6 +64,10 @@
             <id>org.bstats</id>
             <url>https://mvnrepository.com/artifact/</url>
         </repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/releases/</url>
+        </repository>
     </repositories>
 
     <build>
