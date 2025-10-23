@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-@Plugin(id = "cyannouncervelocity", name = "CyAnnouncerVelocity", version = "1.7.0",
+@Plugin(id = "cyannouncervelocity", name = "CyAnnouncerVelocity", version = "1.0.0",
         description = "An advanced, server-specific announcer plugin for Velocity.", authors = {"cydev-id"})
 public class VelocityAnnouncer {
 
