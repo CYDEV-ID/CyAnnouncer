@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-@Plugin(id = "cyannouncervelocity", name = "CyAnnouncerVelocity", version = "1.0.0",
+@Plugin(id = "cyannouncervelocity", name = "CyAnnouncerVelocity", version = "1.0.1",
         description = "An advanced, server-specific announcer plugin for Velocity.", authors = {"cydev-id"})
 public class VelocityAnnouncer {
 
@@ -150,9 +150,14 @@ public class VelocityAnnouncer {
 
                 if (announcementToSend != null) {
                     List<Player> targetPlayers = playersByServer.get(serverName);
-                    for (String line : announcementToSend.lines()) {
-                        Component finalLine = LegacyComponentSerializer.legacyAmpersand().deserialize(this.prefix + line);
-                        for (Player player : targetPlayers) {
+
+                    for (Player player : targetPlayers) {
+                        for (String line : announcementToSend.lines()) {
+                            String rawLine = this.prefix + line;
+
+                            String parsedLine = replacePlaceholders(rawLine, player);
+
+                            Component finalLine = LegacyComponentSerializer.legacyAmpersand().deserialize(parsedLine);
                             player.sendMessage(finalLine);
                         }
                     }
@@ -162,8 +167,29 @@ public class VelocityAnnouncer {
 
         logger.info("Advanced announcements scheduler started, running every " + this.interval + " seconds.");
     }
+    /**
+     * @param text
+     * @param player
+     * @return
+     */
+    private String replacePlaceholders(String text, Player player) {
+        String serverName = "unknown";
+        int serverOnline = 0;
 
-    // Getter methods
+        if (player.getCurrentServer().isPresent()) {
+            serverName = player.getCurrentServer().get().getServerInfo().getName();
+            serverOnline = player.getCurrentServer().get().getServer().getPlayersConnected().size();
+        }
+
+        return text
+                .replace("%player_name%", player.getUsername())
+                .replace("%server_name%", serverName)
+                .replace("%proxy_online%", String.valueOf(server.getPlayerCount()))
+                .replace("%server_online%", String.valueOf(serverOnline))
+                .replace("%ping%", String.valueOf(player.getPing()));
+    }
+
+
     public ProxyServer getServer() { return server; }
     public String getPrefix() { return prefix; }
     public Logger getLogger() { return logger; }

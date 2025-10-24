@@ -120,9 +120,14 @@ public class BungeeAnnouncer extends Plugin {
 
                 if (announcementToSend != null) {
                     List<ProxiedPlayer> targetPlayers = playersByServer.get(serverName);
-                    for (String line : announcementToSend.lines()) {
-                        TextComponent finalLine = new TextComponent(ChatColor.translateAlternateColorCodes('&', this.prefix + line));
-                        for (ProxiedPlayer player : targetPlayers) {
+
+                    for (ProxiedPlayer player : targetPlayers) {
+                        for (String line : announcementToSend.lines()) {
+                            String rawLine = this.prefix + line;
+
+                            String parsedLine = replacePlaceholders(rawLine, player);
+
+                            TextComponent finalLine = new TextComponent(ChatColor.translateAlternateColorCodes('&', parsedLine));
                             player.sendMessage(finalLine);
                         }
                     }
@@ -131,6 +136,24 @@ public class BungeeAnnouncer extends Plugin {
         }, interval, interval, TimeUnit.SECONDS);
 
         getLogger().info("Announcements scheduler started, running every " + this.interval + " seconds.");
+    }
+    /**
+     * @param text
+     * @param player
+     * @return
+     */
+    private String replacePlaceholders(String text, ProxiedPlayer player) {
+        String serverName = "unknown";
+        if (player.getServer() != null && player.getServer().getInfo() != null) {
+            serverName = player.getServer().getInfo().getName();
+        }
+
+        return text
+                .replace("%player_name%", player.getName())
+                .replace("%server_name%", serverName)
+                .replace("%proxy_online%", String.valueOf(getProxy().getOnlineCount()))
+                .replace("%server_online%", String.valueOf(player.getServer().getInfo().getPlayers().size()))
+                .replace("%ping%", String.valueOf(player.getPing()));
     }
 
     public String getPrefix() { return prefix; }

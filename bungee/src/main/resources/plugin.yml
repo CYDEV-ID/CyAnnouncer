@@ -1,6 +1,6 @@
 name: CyAnnouncerBungee
 main: cydev.id.cyannouncer.bungee.BungeeAnnouncer
-version: 1.0.0
+version: 1.0.1
 author: cydev-id
 description: An advanced, server-specific announcer plugin for BungeeCord.
 
