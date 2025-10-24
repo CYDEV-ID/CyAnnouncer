@@ -1,6 +1,6 @@
 package cydev.id.cyannouncer.bukkit;
 
-import me.clip.placeholderapi.PlaceholderAPI; // Ditambahkan
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -24,8 +24,6 @@ public class CyAnnouncer extends JavaPlugin {
     private final Map<String, AtomicInteger> allCounters = new ConcurrentHashMap<>();
     private String prefix;
     private int interval;
-
-    // Variabel untuk menyimpan status PAPI
     private boolean placeholderApiEnabled = false;
 
     @Override
@@ -35,12 +33,10 @@ public class CyAnnouncer extends JavaPlugin {
 
         loadConfig();
 
-        // Pastikan class AnnouncerCommand Anda ada
         AnnouncerCommand announcerExecutor = new AnnouncerCommand(this);
         getCommand("announcer").setExecutor(announcerExecutor);
         getCommand("announcer").setTabCompleter(announcerExecutor);
 
-        // Cek apakah PlaceholderAPI ada di server
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             this.placeholderApiEnabled = true;
             getLogger().info("Successfully hooked into PlaceholderAPI.");
@@ -72,7 +68,6 @@ public class CyAnnouncer extends JavaPlugin {
 
                 if (worlds.isEmpty() || lines.isEmpty()) continue;
 
-                // Pastikan class Announcement Anda ada
                 Announcement announcement = new Announcement(worlds, lines);
                 if (worlds.contains("all")) {
                     allMessages.add(announcement);
