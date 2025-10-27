@@ -54,7 +54,7 @@ Commands are different and permissions remain the same
 
 ### BungeeCord
 | Commands                  | Descriptions                                          |           Permissions           |
-| --------------------------| ----------------------------------------------------- | ------------------------------- |
+| ------------------------- | ----------------------------------------------------- | ------------------------------- |
 | `/bcreload`               | Reload config.yml                                     | `announcer.reload`              |
 | `/bcbroadcast all/server` | Send messages to all servers or to specific servers.  | `announcer.broadcast`           |
 
@@ -72,11 +72,11 @@ The configuration of each platform is different
 
 ```yaml
 # ===================================================================
-#                 CyAnnouncer-Bukkit Configuration
+#                  CyAnnouncer Configuration
 # ===================================================================
 #
 # Plugin Author: cydev-id
-# Plugin Version: 1.0.0
+# Plugin Version: 1.0.2
 #
 # HOW IT WORKS:
 # This plugin will display announcements with an independent cycle for each world.
@@ -88,6 +88,9 @@ The configuration of each platform is different
 #
 # ===================================================================
 
+# DO NOT CHANGE THIS.
+config-version: 2
+
 # Interval in SECONDS between each announcement for a world.
 interval: 60
 
@@ -95,23 +98,44 @@ interval: 60
 # Set to "" to disable.
 prefix: "&e[&l!&r&e] &r"
 
+# (NEW) --- SETTINGS SECTION (Feature #3) ---
+settings:
+  # Set to true to pick a random message from all available messages (global + specific) each cycle.
+  # Set to false to use the default sequential cycle (default).
+  random: false
+
 # --- ANNOUNCEMENTS SECTION ---
 announcements:
   # --- GLOBAL ANNOUNCEMENTS ---
   # These messages will be part of the cycle in ALL worlds.
   # Use "all" in the 'worlds' list.
+
+  # Example 1: Standard CHAT message (default type)
   - worlds:
       - "all"
     lines:
       - "&eDon't forget to vote for the server every day!"
       - "&fUse the command &b/vote&f to get rewards."
 
+  # Example 2: Global ACTIONBAR message with a SOUND (Features #2 & #5)
+  - worlds:
+      - "all"
+    type: "ACTIONBAR" # (NEW) Type: CHAT, ACTIONBAR, or TITLE
+    sound: "ENTITY_PLAYER_LEVELUP" # (NEW) Sound from Bukkit's Sound Enum
+    lines:
+      - "&aWelcome! Check out our store at &b/buy"
+      # Note: ACTIONBAR only uses the first line.
+
   # --- WORLD-SPECIFIC ANNOUNCEMENTS ---
   # These messages will ONLY appear in the specified worlds.
+
+  # Example 3: TITLE message for a specific world (Feature #2)
   - worlds:
       - "world_the_end"
+    type: "TITLE"
     lines:
-      - "&5Be careful! The Ender Dragon is powerful in this world."
+      - "&5Welcome to The End!" # Line 1 is the main TITLE
+      - "&7Be careful of the Dragon!" # Line 2 is the SUBTITLE
 
   - worlds:
       - "world_nether"
@@ -124,20 +148,15 @@ announcements:
 `/plugins/CyAnnouncerBungee/config.yml`<br>`/plugins/CyAnnouncerVelocity/config.yml`<br />
 
 ```yaml
-# ===================================================================+
-#             CyAnnouncer-Bungee & Velocity Configuration
-# ===================================================================+
+# ===================================================================
+#             CyAnnouncerBungee & Velocity Configuration
+# ===================================================================
 #
 # Plugin Author: cydev-id
-# Plugin Version: 1.0.0
+# Plugin Version: 1.0.2
 #
 # HOW IT WORKS:
 # This plugin will display announcements with an independent cycle for each server.
-#
-# 1. A server with specific messages (e.g., 'survival') will have a cycle of:
-#    (Global Message -> Specific Survival Msg 1 -> Global Message -> ...)
-#
-# 2. A server WITHOUT specific messages will ONLY cycle through the global messages.
 #
 # ===================================================================
 
@@ -148,18 +167,45 @@ interval: 60
 # Set to "" (empty quotes) to disable the prefix entirely.
 prefix: "&e[&l!&r&e] &r"
 
+# (NEW) --- SETTINGS SECTION (Feature #3) ---
+settings:
+  # Set to true to pick a random message from all available messages (global + specific) each cycle.
+  # Set to false to use the default sequential cycle (default).
+  random: false
+
 # --- ANNOUNCEMENTS SECTION ---
 announcements:
   # --- GLOBAL ANNOUNCEMENTS ---
   # To make a message global, add "all" to its 'servers' list.
+
+  # Example 1: Standard CHAT message (default type)
   - servers:
       - "all"
     lines:
       - "&eDon't forget to vote for the server every day!"
       - "&fUse the command &b/vote&f to get rewards."
 
+  # Example 2: Global ACTIONBAR message (Feature #2)
+  - servers:
+      - "all"
+    type: "ACTIONBAR" # (NEW) Type: CHAT, ACTIONBAR, or TITLE
+    # sound: "..." # (Note: Sound is NOT supported on BungeeCord)
+    lines:
+      - "&aWelcome! You are on server &e%server_name%&a!"
+      # Note: ACTIONBAR only uses the first line.
+
   # --- SERVER-SPECIFIC ANNOUNCEMENTS ---
   # These messages will ONLY be shown to players on the specified servers.
+
+  # Example 3: TITLE message for a specific server (Feature #2)
+  - servers:
+      - "lobby"
+    type: "TITLE"
+    lines:
+      - "&bWelcome to the Lobby!" # Line 1 is the main TITLE
+      - "&7Check out the new gadgets!" # Line 2 is the SUBTITLE
+
+  # Example 4: Original Survival message
   - servers:
       - "survival"
     lines:
