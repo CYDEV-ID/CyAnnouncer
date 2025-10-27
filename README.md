@@ -69,6 +69,8 @@ The configuration of each platform is different
 
 ### Bukkit/Spigot 
 `/plugins/CyAnnouncerBukkit/config.yml`
+<details>
+<summary>Default Configuration</summary>
 
 ```yaml
 # ===================================================================
@@ -143,9 +145,12 @@ announcements:
       - "&cIt's hot in here! Make sure to bring fire resistance potions."
       - "&fDon't hit a Piglin without preparation!"
 ```
+</details>
 
 ### BungeeCord
 `/plugins/CyAnnouncerBungee/config.yml`
+<details>
+<summary>Default Configuration</summary>
 
 ```yaml
 # ===================================================================
@@ -214,8 +219,12 @@ announcements:
     lines:
       - "&cWatch out! This is a PvP-enabled server."
 ```
+</details>
+
 ### Velocity
 `/plugins/CyAnnouncerVelocity/config.yml`
+<details>
+<summary>Default Configuration</summary>
 
 ```yaml
 # ===================================================================
@@ -311,6 +320,7 @@ announcements:
       - "&cWatch out! PvP is enabled in the wilderness."
       - "&fClaim your land using a Golden Shovel to stay safe."
 ```
+</details>
 
 ## License
 This project is licensed under the [MIT](LICENSE)
