@@ -13,6 +13,9 @@
 #
 # ===================================================================
 
+# DO NOT CHANGE THIS.
+config-version: 2
+
 # Default interval in SECONDS between each announcement for a server.
 # For example, if a player is on the Survival server, they will see a
 # new message from their announcement cycle every 60 seconds.

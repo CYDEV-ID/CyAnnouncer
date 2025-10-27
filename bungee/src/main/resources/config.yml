@@ -10,6 +10,9 @@
 #
 # ===================================================================
 
+# DO NOT CHANGE THIS.
+config-version: 2
+
 # Default interval in SECONDS between each announcement for a server.
 interval: 60
 

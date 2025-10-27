@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.*;
+import java.util.logging.Level;
 
 public class BungeeAnnouncer extends Plugin {
 
@@ -45,24 +46,48 @@ public class BungeeAnnouncer extends Plugin {
     }
 
     public void loadConfig() {
+        int targetConfigVersion = 2;
+
         File configFile = new File(getDataFolder(), "config.yml");
+        YamlConfigurationLoader loader = YamlConfigurationLoader.builder().file(configFile).build();
+        CommentedConfigurationNode config;
+
         if (!configFile.exists()) {
-            try {
-                getDataFolder().mkdir();
-                try (InputStream defaultConfig = getResourceAsStream("config.yml")) {
-                    if (defaultConfig != null) {
-                        Files.copy(defaultConfig, configFile.toPath());
-                    }
-                }
-            } catch (Exception e) { getLogger().severe("Failed to create the default configuration file!"); return; }
+            getLogger().info("No config.yml found, creating a new one...");
+            saveDefaultConfigHelper();
         }
 
-        YamlConfigurationLoader loader = YamlConfigurationLoader.builder().file(configFile).build();
         try {
-            CommentedConfigurationNode config = loader.load();
+            config = loader.load();
+
+            int currentVersion = config.node("config-version").getInt(0);
+
+            if (currentVersion < targetConfigVersion) {
+                getLogger().warning("!!! DETECTED OUTDATED CONFIG (Version " + currentVersion + ") !!!");
+                getLogger().warning("Backing up your old config to 'config.yml.old'...");
+
+                File oldConfigFile = new File(getDataFolder(), "config.yml.old");
+                if (oldConfigFile.exists()) {
+                    oldConfigFile.delete();
+                }
+
+                loader = null;
+                if (!configFile.renameTo(oldConfigFile)) {
+                    getLogger().severe("!!! FAILED TO BACK UP OLD CONFIG. Please do it manually! Aborting load.");
+                    return;
+                }
+
+                saveDefaultConfigHelper();
+
+                loader = YamlConfigurationLoader.builder().file(configFile).build();
+                config = loader.load();
+
+                getLogger().info("Successfully loaded new config.yml (Version " + targetConfigVersion + ").");
+                getLogger().info("Please transfer your old announcement lines from 'config.yml.old'.");
+            }
+
             this.interval = config.node("interval").getInt(60);
             this.prefix = config.node("prefix").getString("&e[&l!&r&e] &r");
-
             this.isRandom = config.node("settings", "random").getBoolean(false);
 
             this.allMessages = new ArrayList<>();
@@ -72,7 +97,6 @@ public class BungeeAnnouncer extends Plugin {
             for (CommentedConfigurationNode node : announcementNodes) {
                 List<String> servers = node.node("servers").getList(String.class, Collections.emptyList());
                 List<String> lines = node.node("lines").getList(String.class, Collections.emptyList());
-
                 String type = node.node("type").getString("CHAT").toUpperCase();
                 String sound = node.node("sound").getString("");
 
@@ -88,11 +112,32 @@ public class BungeeAnnouncer extends Plugin {
                     }
                 }
             }
+
             getLogger().info("Configuration loaded. Random Mode: " + this.isRandom);
             getLogger().info("Found " + allMessages.size() + " global announcements and messages for " + serverSpecificMessages.size() + " specific servers.");
             specificCounters.clear();
             allCounters.clear();
-        } catch (Exception e) { getLogger().severe("Failed to load the configuration!"); }
+
+        } catch (Exception e) {
+            getLogger().severe("Failed to load the configuration!");
+            e.printStackTrace();
+        }
+    }
+
+    private void saveDefaultConfigHelper() {
+        if (!getDataFolder().exists()) {
+            getDataFolder().mkdir();
+        }
+        File configFile = new File(getDataFolder(), "config.yml");
+        if (!configFile.exists()) {
+            try (InputStream defaultConfig = getResourceAsStream("config.yml")) {
+                if (defaultConfig != null) {
+                    Files.copy(defaultConfig, configFile.toPath());
+                }
+            } catch (Exception e) {
+                getLogger().log(Level.SEVERE, "Failed to create the default configuration file!", e);
+            }
+        }
     }
 
     public void startAnnouncements() {
