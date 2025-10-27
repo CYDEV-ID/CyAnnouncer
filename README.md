@@ -54,7 +54,7 @@ Commands are different and permissions remain the same
 
 ### BungeeCord
 | Commands                  | Descriptions                                          |           Permissions           |
-| --------------------------| ----------------------------------------------------- | ------------------------------- |
+| ------------------------- | ----------------------------------------------------- | ------------------------------- |
 | `/bcreload`               | Reload config.yml                                     | `announcer.reload`              |
 | `/bcbroadcast all/server` | Send messages to all servers or to specific servers.  | `announcer.broadcast`           |
 
@@ -149,7 +149,11 @@ announcements:
 
 ```yaml
 # ===================================================================
+<<<<<<< HEAD
 #                 CyAnnouncerBungee Configuration
+=======
+#             CyAnnouncerBungee & Velocity Configuration
+>>>>>>> 6b4a1874635b32d55f1f705ae90ca4594b6b6ae1
 # ===================================================================
 #
 # Plugin Author: cydev-id
