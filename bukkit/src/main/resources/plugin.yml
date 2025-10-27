@@ -4,6 +4,7 @@ version: 1.0.2
 api-version: '1.21'
 author: cydev-id
 softdepend: [PlaceholderAPI]
+folia-supported: true
 description: An advanced, world-specific announcer plugin for modern Minecraft servers.
 website: https://github.com/cydev-id
 
