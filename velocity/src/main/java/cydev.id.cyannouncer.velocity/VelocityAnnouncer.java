@@ -7,8 +7,11 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.scheduler.ScheduledTask;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.title.Title;
 import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -24,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-@Plugin(id = "cyannouncervelocity", name = "CyAnnouncerVelocity", version = "1.0.1",
+@Plugin(id = "cyannouncervelocity", name = "CyAnnouncerVelocity", version = "1.0.2",
         description = "An advanced, server-specific announcer plugin for Velocity.", authors = {"cydev-id"})
 public class VelocityAnnouncer {
 
@@ -42,6 +45,7 @@ public class VelocityAnnouncer {
 
     private String prefix;
     private int interval;
+    private boolean isRandom = false;
 
     @Inject
     public VelocityAnnouncer(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory, Metrics.Factory metricsFactory) {
@@ -85,6 +89,8 @@ public class VelocityAnnouncer {
             this.interval = config.node("interval").getInt(60);
             this.prefix = config.node("prefix").getString("&e[&l!&r&e] &r");
 
+            this.isRandom = config.node("settings", "random").getBoolean(false);
+
             this.allMessages = new ArrayList<>();
             this.serverSpecificMessages = new HashMap<>();
 
@@ -93,8 +99,12 @@ public class VelocityAnnouncer {
                 List<String> servers = node.node("servers").getList(String.class, Collections.emptyList());
                 List<String> lines = node.node("lines").getList(String.class, Collections.emptyList());
 
+                String type = node.node("type").getString("CHAT").toUpperCase();
+                String sound = node.node("sound").getString("");
+
                 if (!servers.isEmpty() && !lines.isEmpty()) {
-                    Announcement announcement = new Announcement(servers, lines);
+                    Announcement announcement = new Announcement(servers, lines, type, sound);
+
                     if (servers.contains("all")) {
                         allMessages.add(announcement);
                     } else {
@@ -107,7 +117,8 @@ public class VelocityAnnouncer {
                 }
             }
 
-            logger.info("Configuration loaded. Found " + allMessages.size() + " global announcements and messages for " + serverSpecificMessages.size() + " specific servers.");
+            logger.info("Configuration loaded. Random Mode: " + this.isRandom);
+            logger.info("Found " + allMessages.size() + " global announcements and messages for " + serverSpecificMessages.size() + " specific servers.");
             specificCounters.clear();
             allCounters.clear();
         } catch (Exception e) {
@@ -131,48 +142,97 @@ public class VelocityAnnouncer {
                     .collect(Collectors.groupingBy(p -> p.getCurrentServer().get().getServerInfo().getName()));
 
             for (String serverName : playersByServer.keySet()) {
+                List<Player> targetPlayers = playersByServer.get(serverName);
                 List<Announcement> specificMessages = serverSpecificMessages.getOrDefault(serverName, Collections.emptyList());
-
-                AtomicInteger specificCounter = specificCounters.computeIfAbsent(serverName, k -> new AtomicInteger(0));
-                AtomicInteger allCounter = allCounters.computeIfAbsent(serverName, k -> new AtomicInteger(0));
 
                 Announcement announcementToSend = null;
 
-                if (!specificMessages.isEmpty() && specificCounter.get() < specificMessages.size()) {
-                    announcementToSend = specificMessages.get(specificCounter.getAndIncrement());
-                } else {
-                    if (!allMessages.isEmpty()) {
-                        announcementToSend = allMessages.get(allCounter.getAndIncrement());
-                        if (allCounter.get() >= allMessages.size()) allCounter.set(0);
+                if (this.isRandom) {
+                    List<Announcement> availableMessages = new ArrayList<>(allMessages);
+                    availableMessages.addAll(specificMessages);
+                    if (!availableMessages.isEmpty()) {
+                        announcementToSend = availableMessages.get(new Random().nextInt(availableMessages.size()));
                     }
-                    specificCounter.set(0);
+                } else {
+                    AtomicInteger specificCounter = specificCounters.computeIfAbsent(serverName, k -> new AtomicInteger(0));
+                    AtomicInteger allCounter = allCounters.computeIfAbsent(serverName, k -> new AtomicInteger(0));
+
+                    if (!specificMessages.isEmpty() && specificCounter.get() < specificMessages.size()) {
+                        announcementToSend = specificMessages.get(specificCounter.getAndIncrement());
+                    } else {
+                        if (!allMessages.isEmpty()) {
+                            announcementToSend = allMessages.get(allCounter.getAndIncrement());
+                            if (allCounter.get() >= allMessages.size()) allCounter.set(0);
+                        }
+                        specificCounter.set(0);
+                    }
                 }
 
                 if (announcementToSend != null) {
-                    List<Player> targetPlayers = playersByServer.get(serverName);
-
-                    for (Player player : targetPlayers) {
-                        for (String line : announcementToSend.lines()) {
-                            String rawLine = this.prefix + line;
-
-                            String parsedLine = replacePlaceholders(rawLine, player);
-
-                            Component finalLine = LegacyComponentSerializer.legacyAmpersand().deserialize(parsedLine);
-                            player.sendMessage(finalLine);
-                        }
-                    }
+                    sendAnnouncement(targetPlayers, announcementToSend);
                 }
             }
         }).repeat(Duration.ofSeconds(this.interval)).schedule();
 
         logger.info("Advanced announcements scheduler started, running every " + this.interval + " seconds.");
     }
-    /**
-     * @param text
-     * @param player
-     * @return
-     */
+
+    private void sendAnnouncement(List<Player> players, Announcement announcement) {
+        String type = announcement.type();
+        String soundName = announcement.sound();
+        List<String> lines = announcement.lines();
+
+        String title = lines.isEmpty() ? "" : lines.get(0);
+        String subtitle = lines.size() > 1 ? lines.get(1) : "";
+
+        Title.Times times = Title.Times.times(
+                Duration.ofMillis(500),
+                Duration.ofMillis(3500),
+                Duration.ofMillis(1000)
+        );
+
+        for (Player player : players) {
+            if (soundName != null && !soundName.isEmpty()) {
+                try {
+                    String minecraftKey = soundName.toLowerCase(Locale.ROOT).replace('_', '.');
+
+                    Sound sound = Sound.sound(
+                            Key.key("minecraft", minecraftKey),
+                            Sound.Source.MASTER, 1f, 1f
+                    );
+                    player.playSound(sound);
+                } catch (Exception e) {
+                    logger.warn("Invalid sound name or format in config.yml: " + soundName);
+                }
+            }
+
+            Component parsedTitle = deserialize(replacePlaceholders(title, player));
+            Component parsedSubtitle = deserialize(replacePlaceholders(subtitle, player));
+
+            switch (type) {
+                case "TITLE":
+                    Title titleObj = Title.title(parsedTitle, parsedSubtitle, times);
+                    player.showTitle(titleObj);
+                    break;
+
+                case "ACTIONBAR":
+                    player.sendActionBar(parsedTitle);
+                    break;
+
+                case "CHAT":
+                default:
+                    for (String line : lines) {
+                        Component parsedLine = deserialize(replacePlaceholders(this.prefix + line, player));
+                        player.sendMessage(parsedLine);
+                    }
+                    break;
+            }
+        }
+    }
+
     private String replacePlaceholders(String text, Player player) {
+        if (text == null || text.isEmpty()) return "";
+
         String serverName = "unknown";
         int serverOnline = 0;
 
@@ -189,6 +249,9 @@ public class VelocityAnnouncer {
                 .replace("%ping%", String.valueOf(player.getPing()));
     }
 
+    private Component deserialize(String text) {
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(text);
+    }
 
     public ProxyServer getServer() { return server; }
     public String getPrefix() { return prefix; }

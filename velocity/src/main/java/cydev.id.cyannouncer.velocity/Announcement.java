@@ -3,8 +3,11 @@ package cydev.id.cyannouncer.velocity;
 import java.util.List;
 
 /**
- * A simple data container (record) to hold the target servers
- * and the message lines for a single announcement block.
+ * @param servers
+ * @param lines
+ * @param type
+ * @param sound
  */
-public record Announcement(List<String> servers, List<String> lines) {
+
+public record Announcement(List<String> servers, List<String> lines, String type, String sound) {
 }

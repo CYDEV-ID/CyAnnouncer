@@ -1,9 +1,9 @@
 # ===================================================================
-#                CyAnnouncer-Velocity Configuration
+#                 CyAnnouncerVelocity Configuration
 # ===================================================================
 #
 # Plugin Author: cydev-id
-# Plugin Version: 1.0.1
+# Plugin Version: 1.0.2
 #
 # HOW TO USE THIS FILE:
 #
@@ -21,6 +21,12 @@ interval: 60
 # The prefix that appears before every line of an announcement.
 # Set to "" (empty quotes) to disable the prefix entirely.
 prefix: "&e[&l!&r&e] &r"
+
+# (NEW) --- SETTINGS SECTION (Feature #3) ---
+settings:
+  # Set to true to pick a random message from all available messages (global + specific) each cycle.
+  # Set to false to use the default sequential cycle (default).
+  random: false
 
 
 # ===================================================================
@@ -43,27 +49,34 @@ announcements:
   # These messages will be part of the cycle for EVERY server.
   # To make a message global, add "all" to its 'servers' list.
 
+  # Example 1: Standard CHAT message (default)
   - servers:
       - "all"
     lines:
       - "&eDon't forget to vote for our server every day!"
       - "&fUse the command &b/vote&f to get rewards."
 
+  # Example 2: Global ACTIONBAR message with a SOUND (Features #2 & #5)
   - servers:
       - "all"
+    type: "ACTIONBAR" # (NEW) Type: CHAT, ACTIONBAR, or TITLE
+    sound: "entity.player.levelup" # (NEW) Sound (use Minecraft key, e.g., 'block.note_block.pling')
     lines:
       - "&dCheck out our webstore for exclusive ranks and items!"
+      # Note: ACTIONBAR only uses the first line.
 
   # --- SERVER-SPECIFIC ANNOUNCEMENTS ---
   # These messages will ONLY be shown to players on the specified servers.
   # They will be inserted into the cycle after a global message.
 
+  # Example 3: TITLE message for Skyblock/Oneblock (Feature #2)
   - servers:
       - "oneblock"
       - "skyblock" # You can target multiple servers with the same message block.
+    type: "TITLE"
     lines:
-      - "&aWelcome to the Sky!"
-      - "&fType &b/is&f to start your adventure."
+      - "&aWelcome to the Sky!" # Line 1 is the main TITLE
+      - "&fType &b/is&f to start your adventure." # Line 2 is the SUBTITLE
 
   - servers:
       - "oneblock"
@@ -71,6 +84,7 @@ announcements:
     lines:
       - "&bLooking for a team? Use &a/team&b to cooperate with others!"
 
+  # Example 4: Standard CHAT message for Survival
   - servers:
       - "survival"
     lines:

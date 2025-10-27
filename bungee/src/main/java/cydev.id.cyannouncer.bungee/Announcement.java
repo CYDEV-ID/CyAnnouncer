@@ -2,5 +2,12 @@ package cydev.id.cyannouncer.bungee;
 
 import java.util.List;
 
-public record Announcement(List<String> servers, List<String> lines) {
+/**
+ * @param servers
+ * @param lines
+ * @param type
+ * @param sound
+ */
+
+public record Announcement(List<String> servers, List<String> lines, String type, String sound) {
 }

@@ -3,7 +3,7 @@
 # ===================================================================
 #
 # Plugin Author: cydev-id
-# Plugin Version: 1.0.1
+# Plugin Version: 1.0.2
 #
 # HOW IT WORKS:
 # This plugin will display announcements with an independent cycle for each world.
@@ -15,6 +15,9 @@
 #
 # ===================================================================
 
+# DO NOT CHANGE THIS.
+config-version: 2
+
 # Interval in SECONDS between each announcement for a world.
 interval: 60
 
@@ -22,23 +25,44 @@ interval: 60
 # Set to "" to disable.
 prefix: "&e[&l!&r&e] &r"
 
+# (NEW) --- SETTINGS SECTION (Feature #3) ---
+settings:
+  # Set to true to pick a random message from all available messages (global + specific) each cycle.
+  # Set to false to use the default sequential cycle (default).
+  random: false
+
 # --- ANNOUNCEMENTS SECTION ---
 announcements:
   # --- GLOBAL ANNOUNCEMENTS ---
   # These messages will be part of the cycle in ALL worlds.
   # Use "all" in the 'worlds' list.
+
+  # Example 1: Standard CHAT message (default type)
   - worlds:
       - "all"
     lines:
       - "&eDon't forget to vote for the server every day!"
       - "&fUse the command &b/vote&f to get rewards."
 
+  # Example 2: Global ACTIONBAR message with a SOUND (Features #2 & #5)
+  - worlds:
+      - "all"
+    type: "ACTIONBAR" # (NEW) Type: CHAT, ACTIONBAR, or TITLE
+    sound: "ENTITY_PLAYER_LEVELUP" # (NEW) Sound from Bukkit's Sound Enum
+    lines:
+      - "&aWelcome! Check out our store at &b/buy"
+      # Note: ACTIONBAR only uses the first line.
+
   # --- WORLD-SPECIFIC ANNOUNCEMENTS ---
   # These messages will ONLY appear in the specified worlds.
+
+  # Example 3: TITLE message for a specific world (Feature #2)
   - worlds:
       - "world_the_end"
+    type: "TITLE"
     lines:
-      - "&5Be careful! The Ender Dragon is powerful in this world."
+      - "&5Welcome to The End!" # Line 1 is the main TITLE
+      - "&7Be careful of the Dragon!" # Line 2 is the SUBTITLE
 
   - worlds:
       - "world_nether"
