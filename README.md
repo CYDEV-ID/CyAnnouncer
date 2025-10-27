@@ -149,11 +149,7 @@ announcements:
 
 ```yaml
 # ===================================================================
-<<<<<<< HEAD
 #                 CyAnnouncerBungee Configuration
-=======
-#             CyAnnouncerBungee & Velocity Configuration
->>>>>>> 6b4a1874635b32d55f1f705ae90ca4594b6b6ae1
 # ===================================================================
 #
 # Plugin Author: cydev-id
@@ -163,6 +159,9 @@ announcements:
 # This plugin will display announcements with an independent cycle for each server.
 #
 # ===================================================================
+
+# DO NOT CHANGE THIS.
+config-version: 2
 
 # Default interval in SECONDS between each announcement for a server.
 interval: 60
